@@ -250,8 +250,19 @@ Page({
     wx.setClipboardData({
       data: trackingNumber,
       success: () => {
+        const kuaidi100AppId = shopConfig.externalMiniPrograms && shopConfig.externalMiniPrograms.kuaidi100AppId;
+        if (!kuaidi100AppId) {
+          wx.showModal({
+            title: '单号已复制',
+            content: '暂未配置快递100小程序，请在微信搜索“快递100”后粘贴单号查询。',
+            showCancel: false,
+            confirmColor: '#8F6BE9',
+          });
+          return;
+        }
+
         wx.navigateToMiniProgram({
-          appId: shopConfig.externalMiniPrograms.kuaidi100AppId,
+          appId: kuaidi100AppId,
           path,
           fail: (err) => {
             console.error('[vibe] open kuaidi100 failed', err);

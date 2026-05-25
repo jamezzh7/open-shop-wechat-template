@@ -37,7 +37,7 @@
 目标客户流程尽量压缩成：
 
 1. 复制 `shops/example.json` 为本地私有配置，例如 `shops/client.local.json`。
-2. 填写小程序 appid、CloudBase 环境、店铺名称、品牌色、功能开关等必要字段。
+2. 填写小程序 appid、CloudBase 环境、店铺名称、品牌色、功能开关等必要字段；快递100等外部小程序 AppID 按需填写，默认不写入公开模板。
 3. 运行：
 
 ```sh

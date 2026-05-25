@@ -12,6 +12,16 @@ project.private.config.json
 *.local
 shops/*.local.json
 
+# Local AI/agent workspace files
+AGENTS.md
+CLAUDE.md
+.ai/
+.agents/
+.claude/
+.codex/
+.mcp.json
+skills-lock.json
+
 # Build outputs
 dist/
 build/

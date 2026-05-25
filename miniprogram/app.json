@@ -50,8 +50,6 @@
   "sitemapLocation": "sitemap.json",
   "style": "v2",
   "lazyCodeLoading": "requiredComponents",
-  "navigateToMiniProgramAppIdList": [
-    "wx6885acbedba59c14"
-  ],
+  "navigateToMiniProgramAppIdList": [],
   "requiredPrivateInfos": ["chooseAddress"]
 }

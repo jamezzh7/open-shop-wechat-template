@@ -18,6 +18,6 @@ module.exports = {
     { label: '挚友', amount: 600, bonus: 0 },
   ],
   externalMiniPrograms: {
-    kuaidi100AppId: 'wx6885acbedba59c14',
+    kuaidi100AppId: '',
   },
 };
