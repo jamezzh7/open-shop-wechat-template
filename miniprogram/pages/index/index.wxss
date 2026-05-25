@@ -1,0 +1,63 @@
+.container {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.landing-image {
+  width: 100%;
+  display: block;
+}
+
+.cta-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 40rpx;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.cta-btn {
+  width: 360rpx;
+  height: 88rpx;
+  padding: 0;
+  border: 2rpx solid rgba(143, 107, 233, 0.24);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.96);
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+  border-radius: var(--radius-pill);
+  box-shadow: 0 10rpx 28rpx rgba(31, 27, 36, 0.14);
+  pointer-events: auto;
+}
+
+.cta-btn--active {
+  background-color: #FFFFFF;
+  box-shadow: 0 6rpx 20rpx rgba(31, 27, 36, 0.12);
+}
+
+.cta-btn-text {
+  color: var(--color-text-primary);
+  font-size: var(--text-base);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.cta-btn-arrow {
+  color: var(--color-primary);
+  font-size: 38rpx;
+  font-weight: 300;
+  line-height: 1;
+  margin-left: var(--space-2);
+  margin-top: -2rpx;
+}
+
+.cta-btn::after {
+  border: none;
+}

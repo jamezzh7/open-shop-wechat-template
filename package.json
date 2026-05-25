@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "bootstrap:shop": "node scripts/bootstrap-shop.js",
+    "deploy:functions": "node scripts/deploy-cloudfunctions.js",
+    "admin:bind-sql": "node scripts/print-admin-bind-sql.js"
+  },
+  "private": true
+}

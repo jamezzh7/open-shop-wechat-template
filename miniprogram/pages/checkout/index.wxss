@@ -1,0 +1,399 @@
+/* ─── Page shell: column flex keeps bottom bar pinned ────────── */
+page {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-subtle);
+}
+
+.checkout-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* ─── Section cards ───────────────────────────────────────────── */
+.section-card {
+  background-color: var(--color-surface);
+  margin: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.section-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-wider);
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+/* ─── Fulfillment segmented control ──────────────────────────── */
+.fulfillment-tabs {
+  display: flex;
+  background-color: var(--color-bg-subtle);
+  border-radius: var(--radius-pill);
+  padding: 4rpx;
+  margin-bottom: var(--space-4);
+}
+
+.fulfillment-tab {
+  flex: 1;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  transition: background-color 0.2s ease;
+}
+
+.fulfillment-tab--active {
+  background-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.fulfillment-tab-text {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.fulfillment-tab--active .fulfillment-tab-text {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+/* ─── Store info (pickup mode) ────────────────────────────────── */
+.store-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.store-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+.store-address {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--leading-normal);
+  margin-top: var(--space-2);
+}
+
+.store-meta {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-1);
+}
+
+/* ─── Address selector (delivery mode) ───────────────────────── */
+.address-selector {
+  display: flex;
+  align-items: center;
+  min-height: 80rpx;
+}
+
+.address-pin {
+  font-size: 36rpx;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-right: var(--space-3);
+}
+
+.address-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.address-name-row {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: var(--space-1);
+}
+
+.address-name {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-right: var(--space-3);
+}
+
+.address-phone {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.address-detail {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.address-empty {
+  flex: 1;
+}
+
+.address-empty-text {
+  font-size: var(--text-sm);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.address-arrow {
+  font-size: 40rpx;
+  color: var(--color-text-muted);
+  margin-left: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* ─── Order item rows ─────────────────────────────────────────── */
+.checkout-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 2rpx solid var(--color-divider);
+}
+
+.checkout-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.checkout-item-image {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+  background-color: var(--color-bg-subtle);
+}
+
+.checkout-item-info {
+  flex: 1;
+  margin-left: var(--space-3);
+  margin-right: var(--space-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-item-title {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+.checkout-item-flavor {
+  font-size: var(--text-xs);
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-top: 6rpx;
+  display: block;
+}
+
+.checkout-item-meta {
+  margin-top: var(--space-1);
+}
+
+.checkout-item-unit-price {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+.checkout-item-subtotal {
+  font-size: var(--text-md);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+/* ─── Price breakdown rows ────────────────────────────────────── */
+.price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) 0;
+  border-bottom: 2rpx solid var(--color-divider);
+}
+
+.price-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.price-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.price-value {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.price-value--muted {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+/* Free-shipping state */
+.shipping-free-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.price-value--free {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #27AE60;
+}
+
+.shipping-free-badge {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: #27AE60;
+  background-color: #E8F8EE;
+  border-radius: var(--radius-pill);
+  padding: 4rpx 12rpx;
+}
+
+/* ─── Payment method ──────────────────────────────────────────── */
+.payment-option {
+  min-height: 96rpx;
+  padding: 0 var(--space-3);
+  border: 2rpx solid var(--color-divider);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #FFFFFF;
+}
+
+.payment-option:not(:last-child) {
+  margin-bottom: var(--space-3);
+}
+
+.payment-option--active {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-tint);
+}
+
+.payment-option--disabled {
+  opacity: 0.54;
+}
+
+.payment-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-title {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: var(--leading-tight);
+}
+
+.payment-subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  line-height: var(--leading-normal);
+  margin-top: 6rpx;
+}
+
+.payment-check {
+  width: 44rpx;
+  height: 44rpx;
+  margin-left: var(--space-3);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  font-size: var(--text-md);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ─── Remark input ────────────────────────────────────────────── */
+.remark-input {
+  width: 100%;
+  height: 72rpx;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-subtle);
+  border-radius: var(--radius-sm);
+  padding: 0 var(--space-3);
+}
+
+.remark-placeholder {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* ─── Page bottom padding ─────────────────────────────────────── */
+.page-bottom-pad {
+  height: var(--space-4);
+}
+
+/* ─── Sticky bottom bar ───────────────────────────────────────── */
+.bottom-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 112rpx;
+  padding: 0 var(--space-4);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.bottom-total-block {
+  display: flex;
+  align-items: baseline;
+}
+
+.bottom-label {
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+  margin-right: var(--space-2);
+}
+
+.bottom-total {
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: var(--tracking-tight);
+}
+
+.submit-btn {
+  height: 80rpx;
+  padding: 0 var(--space-6);
+  background-color: var(--color-primary);
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+}
+
+.submit-btn--disabled {
+  opacity: 0.6;
+}
+
+.submit-btn-text {
+  color: #FFFFFF;
+  font-size: var(--text-base);
+  font-weight: 600;
+  letter-spacing: var(--tracking-wide);
+}

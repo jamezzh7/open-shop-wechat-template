@@ -1,0 +1,32 @@
+{
+  "shopId": "demo-shop",
+  "shopName": "Open Shop",
+  "projectName": "open-shop",
+  "appid": "your-wechat-mini-program-appid",
+  "cloudbaseEnvId": "your-cloudbase-env-id",
+  "cloudbaseRegion": "ap-shanghai",
+  "database": "vibe_shop",
+  "brandColor": "#8F6BE9",
+  "shareTitle": "Open Shop｜在线点单",
+  "homeHeroImage": "",
+  "pickupStoreName": "Open Shop",
+  "rechargePlans": [
+    { "label": "轻享", "amount": 200, "bonus": 0 },
+    { "label": "常用", "amount": 400, "bonus": 0 },
+    { "label": "挚友", "amount": 600, "bonus": 0 }
+  ],
+  "features": {
+    "wallet": true,
+    "delivery": true,
+    "pickup": true,
+    "webAdmin": true,
+    "enterpriseWechatNotify": false,
+    "subscribeMessageNotify": false
+  },
+  "adminWeb": {
+    "hostingPath": "/admin"
+  },
+  "externalMiniPrograms": {
+    "kuaidi100AppId": "wx6885acbedba59c14"
+  }
+}

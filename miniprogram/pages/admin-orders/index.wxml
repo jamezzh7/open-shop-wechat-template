@@ -1,0 +1,400 @@
+<!-- ── Page wrapper: flex column keeps tab bar sticky ─────────── -->
+<view class="page-wrap">
+
+  <!-- ── Tab bar ─────────────────────────────────────────────────── -->
+  <view class="admin-tab-bar">
+    <view class="admin-tab-list">
+      <view
+        wx:for="{{tabs}}"
+        wx:for-item="tab"
+        wx:for-index="idx"
+        wx:key="label"
+        class="admin-tab-item {{activeTab === idx ? 'admin-tab-item--active' : ''}}"
+        data-tab="{{idx}}"
+        bindtap="onTabTap"
+      >
+        <text class="admin-tab-label">{{tab.label}}</text>
+        <view class="admin-tab-indicator"></view>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── Scrollable order list ─────────────────────────────────── -->
+  <scroll-view class="order-scroll" scroll-y>
+
+    <view class="queue-summary" wx:if="{{!loading}}">
+      <view class="queue-summary-main">
+        <text class="queue-summary-kicker">{{tabs[activeTab].label}}</text>
+        <text class="queue-summary-title">{{orders.length}} 笔订单</text>
+      </view>
+      <text class="queue-summary-note">{{activeTab === 0 ? '可按状态筛选处理' : '按下单时间优先处理'}}</text>
+    </view>
+
+    <!-- Loading -->
+    <view class="loading-wrap" wx:if="{{loading}}">
+      <text class="loading-text">加载中…</text>
+    </view>
+
+    <!-- Empty state (label comes from the active tab's config) -->
+    <view class="empty-wrap" wx:elif="{{orders.length === 0}}">
+      <text class="empty-circle">✓</text>
+      <text class="empty-title">{{tabs[activeTab].emptyTitle}}</text>
+      <text class="empty-sub">{{tabs[activeTab].emptySub}}</text>
+    </view>
+
+    <!-- Order cards (oldest first — FIFO queue) -->
+    <block wx:else>
+      <view
+        class="order-card"
+        wx:for="{{orders}}"
+        wx:for-item="order"
+        wx:key="_id"
+      >
+
+        <!-- Top: date + dynamic status badge -->
+        <view class="card-top">
+          <view class="card-meta">
+            <text class="card-meta-label">下单时间</text>
+            <text class="card-date">{{order.createdAtFormatted}}</text>
+          </view>
+          <view class="status-badge {{order.status === 'refunding' ? 'status-badge--refunding' : ''}}">
+            <text class="status-badge-text">{{order.statusText}}</text>
+          </view>
+        </view>
+
+        <view class="card-divider"></view>
+
+        <!-- Items -->
+        <view class="card-items">
+          <view
+            class="card-item-row"
+            wx:for="{{order.items}}"
+            wx:for-item="item"
+            wx:key="productId"
+          >
+            <view class="card-item-left">
+              <text class="card-item-name">{{item.title}}</text>
+              <text class="card-item-flavor" wx:if="{{item.flavor}}"> · {{item.flavor}}</text>
+            </view>
+            <view class="card-item-right">
+              <text class="card-item-qty">×{{item.quantity}}</text>
+              <text class="card-item-price">¥{{item.itemSubtotalFormatted}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="card-divider"></view>
+
+        <!-- Footer: fulfillment + total + context-specific info + action -->
+        <view class="card-footer">
+          <view class="order-summary-row">
+            <view class="fulfillment-chip">
+              <text class="fulfillment-chip-text">{{order.fulfillmentText}}</text>
+            </view>
+            <view class="footer-total">
+              <text class="footer-total-label">合计</text>
+              <text class="footer-total-amount">¥{{order.totalAmountFormatted}}</text>
+            </view>
+          </view>
+          <text class="footer-breakdown">商品 ¥{{order.subtotalFormatted}} · 运费 ¥{{order.shippingFeeFormatted}}</text>
+
+          <!-- Delivery address: shown on paid (ship) cards so admin knows where to send -->
+          <view class="address-row" wx:if="{{order.status === 'paid' && order.isDelivery && order.addressLine}}">
+            <text class="address-label">收货地址</text>
+            <text class="address-value">{{order.addressLine}}</text>
+          </view>
+          <view class="address-row" wx:elif="{{order.status === 'paid' && order.isDelivery && order.addressInfo.userName}}">
+            <text class="address-label">收货人</text>
+            <text class="address-value">{{order.addressInfo.userName}} {{order.addressInfo.telNumber}}</text>
+          </view>
+
+          <!-- Refund request timestamp: shown on refunding cards -->
+          <view class="refund-info" wx:if="{{order.status === 'refunding' && order.refundRequestedAtFormatted}}">
+            <text class="refund-info-label">申请时间</text>
+            <text class="refund-info-date">{{order.refundRequestedAtFormatted}}</text>
+          </view>
+
+          <view class="price-adjust-note" wx:if="{{order.status === 'pending_payment'}}">
+            <text class="price-adjust-note-text">客户付款前可修改应付金额</text>
+          </view>
+
+          <!-- Action row: amount adjustment for pending, ship button for paid, refund approval for refunding -->
+          <view class="card-actions">
+
+            <view
+              class="action-btn action-btn--detail"
+              data-orderid="{{order._id}}"
+              bindtap="onOpenOrderDetail"
+            >
+              <text class="action-btn-text">订单详情</text>
+            </view>
+
+            <view
+              wx:if="{{order.status === 'pending_payment'}}"
+              class="action-btn action-btn--adjust {{processingOrderId === order._id ? 'action-btn--loading' : ''}}"
+              data-orderid="{{order._id}}"
+              data-amount="{{order.totalAmountFormatted}}"
+              data-title="{{order.primaryItemTitle}}"
+              bindtap="onOpenAdjustAmount"
+            >
+              <text class="action-btn-text">修改金额</text>
+            </view>
+
+            <view
+              wx:elif="{{order.status === 'paid'}}"
+              class="action-btn action-btn--adjust {{processingOrderId === order._id ? 'action-btn--loading' : ''}}"
+              data-orderid="{{order._id}}"
+              bindtap="onShipOrder"
+            >
+              <text class="action-btn-text">{{processingOrderId === order._id ? '发货中…' : '发货'}}</text>
+            </view>
+
+            <view
+              wx:elif="{{order.status === 'refunding'}}"
+              class="action-btn action-btn--refund {{processingOrderId === order._id ? 'action-btn--loading' : ''}}"
+              data-orderid="{{order._id}}"
+              bindtap="onApproveRefund"
+            >
+              <text class="action-btn-text">{{processingOrderId === order._id ? '处理中…' : '同意退款'}}</text>
+            </view>
+
+          </view>
+        </view>
+
+      </view>
+
+      <view class="list-bottom-pad"></view>
+    </block>
+
+  </scroll-view>
+
+</view>
+
+<view
+  class="detail-sheet-mask {{showDetailSheet ? 'detail-sheet-mask--open' : ''}}"
+  catchtouchmove="preventClose"
+  bindtap="onCloseOrderDetail"
+>
+  <view class="detail-sheet" catchtap="preventClose" wx:if="{{detailOrder}}">
+    <view class="detail-sheet-handle"></view>
+    <view class="detail-sheet-head">
+      <view class="detail-sheet-title-wrap">
+        <text class="detail-sheet-kicker">{{detailOrder.statusText}}</text>
+        <text class="detail-sheet-title">订单详情</text>
+      </view>
+      <text class="detail-sheet-close" bindtap="onCloseOrderDetail">×</text>
+    </view>
+
+    <scroll-view class="detail-sheet-scroll" scroll-y>
+      <view class="detail-hero">
+        <view class="detail-hero-left">
+          <text class="detail-hero-label">{{detailOrder.fulfillmentText}}</text>
+          <text class="detail-hero-id">{{detailOrder._id}}</text>
+        </view>
+        <view class="detail-hero-total">
+          <text class="detail-hero-total-label">实付</text>
+          <text class="detail-hero-total-amount">¥{{detailOrder.totalAmountFormatted}}</text>
+        </view>
+      </view>
+
+      <view class="detail-section">
+        <text class="detail-section-title">商品</text>
+        <view
+          class="detail-item"
+          wx:for="{{detailOrder.items}}"
+          wx:for-item="item"
+          wx:key="productId"
+        >
+          <view class="detail-item-main">
+            <text class="detail-item-name">{{item.title}}</text>
+            <text class="detail-item-flavor" wx:if="{{item.flavor}}">{{item.flavor}}</text>
+          </view>
+          <view class="detail-item-side">
+            <text class="detail-item-qty">¥{{item.priceFormatted}} × {{item.quantity}}</text>
+            <text class="detail-item-subtotal">¥{{item.itemSubtotalFormatted}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-section">
+        <text class="detail-section-title">金额</text>
+        <view class="detail-row">
+          <text class="detail-row-label">商品小计</text>
+          <text class="detail-row-value">¥{{detailOrder.subtotalFormatted}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-row-label">运费</text>
+          <text class="detail-row-value">¥{{detailOrder.shippingFeeFormatted}}</text>
+        </view>
+        <view class="detail-row detail-row--strong">
+          <text class="detail-row-label">订单合计</text>
+          <text class="detail-row-value">¥{{detailOrder.totalAmountFormatted}}</text>
+        </view>
+      </view>
+
+      <view class="detail-section">
+        <text class="detail-section-title">履约信息</text>
+        <view class="detail-row">
+          <text class="detail-row-label">方式</text>
+          <text class="detail-row-value">{{detailOrder.fulfillmentText}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.isDelivery}}">
+          <text class="detail-row-label">快递公司</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder.trackingCarrierText}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.isDelivery}}">
+          <text class="detail-row-label">物流单号</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder.trackingNumberText}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.receiverText}}">
+          <text class="detail-row-label">收货人</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder.receiverText}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.addressLine}}">
+          <text class="detail-row-label">地址</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder.addressLine}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-row-label">备注</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder.remarkText}}</text>
+        </view>
+      </view>
+
+      <view class="detail-section">
+        <text class="detail-section-title">时间</text>
+        <view class="detail-row">
+          <text class="detail-row-label">下单</text>
+          <text class="detail-row-value">{{detailOrder.createdAtFormatted}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.paidAtFormatted}}">
+          <text class="detail-row-label">付款</text>
+          <text class="detail-row-value">{{detailOrder.paidAtFormatted}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.shippedAtFormatted}}">
+          <text class="detail-row-label">发货</text>
+          <text class="detail-row-value">{{detailOrder.shippedAtFormatted}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.completedAtFormatted}}">
+          <text class="detail-row-label">完成</text>
+          <text class="detail-row-value">{{detailOrder.completedAtFormatted}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.refundRequestedAtFormatted}}">
+          <text class="detail-row-label">申请退款</text>
+          <text class="detail-row-value">{{detailOrder.refundRequestedAtFormatted}}</text>
+        </view>
+        <view class="detail-row" wx:if="{{detailOrder.refundedAtFormatted}}">
+          <text class="detail-row-label">退款</text>
+          <text class="detail-row-value">{{detailOrder.refundedAtFormatted}}</text>
+        </view>
+      </view>
+
+      <view class="detail-section">
+        <text class="detail-section-title">交易</text>
+        <view class="detail-row">
+          <text class="detail-row-label">订单号</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder._id}}</text>
+        </view>
+        <view class="detail-row">
+          <text class="detail-row-label">支付单号</text>
+          <text class="detail-row-value detail-row-value--wrap">{{detailOrder.transactionText}}</text>
+        </view>
+      </view>
+
+      <view class="detail-bottom-pad"></view>
+    </scroll-view>
+  </view>
+</view>
+
+<view
+  class="tracking-sheet-mask {{showTrackingSheet ? 'tracking-sheet-mask--open' : ''}}"
+  catchtouchmove="preventClose"
+  bindtap="onCloseTrackingSheet"
+>
+  <view class="tracking-sheet" catchtap="preventClose">
+    <view class="tracking-sheet-handle"></view>
+    <view class="tracking-sheet-head">
+      <view>
+        <text class="tracking-sheet-kicker">配送发货</text>
+        <text class="tracking-sheet-title">{{trackingOrderTitle}}</text>
+      </view>
+      <text class="tracking-sheet-close" bindtap="onCloseTrackingSheet">×</text>
+    </view>
+
+    <view class="tracking-field">
+      <text class="tracking-field-label">快递公司</text>
+      <picker
+        mode="selector"
+        range="{{trackingCarriers}}"
+        range-key="name"
+        value="{{trackingCarrierIndex}}"
+        bindchange="onTrackingCarrierChange"
+      >
+        <view class="tracking-picker">
+          <text class="tracking-picker-text">{{trackingCarrierDraft}}</text>
+          <text class="tracking-picker-arrow">›</text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="tracking-field">
+      <text class="tracking-field-label">物流单号</text>
+      <input
+        class="tracking-input"
+        value="{{trackingNumberDraft}}"
+        placeholder="请输入物流单号"
+        placeholder-class="tracking-placeholder"
+        maxlength="100"
+        bindinput="onTrackingNumberInput"
+      />
+    </view>
+
+    <text class="tracking-sheet-note">用户将在订单列表中看到物流单号，可一键跳转快递100查询。</text>
+
+    <view
+      class="tracking-save-btn {{trackingSaving ? 'tracking-save-btn--loading' : ''}}"
+      bindtap="onConfirmTrackingShip"
+    >
+      <text class="tracking-save-text">{{trackingSaving ? '发货中…' : '确认发货'}}</text>
+    </view>
+  </view>
+</view>
+
+<view
+  class="amount-sheet-mask {{showAmountSheet ? 'amount-sheet-mask--open' : ''}}"
+  catchtouchmove="preventClose"
+  bindtap="onCloseAmountSheet"
+>
+  <view class="amount-sheet" catchtap="preventClose">
+    <view class="amount-sheet-handle"></view>
+    <view class="amount-sheet-head">
+      <view>
+        <text class="amount-sheet-kicker">待付款改价</text>
+        <text class="amount-sheet-title">{{amountOrderTitle}}</text>
+      </view>
+      <text class="amount-sheet-close" bindtap="onCloseAmountSheet">×</text>
+    </view>
+
+    <view class="amount-field">
+      <text class="amount-field-label">应付金额</text>
+      <view class="amount-input-wrap">
+        <text class="amount-symbol">¥</text>
+        <input
+          class="amount-input"
+          type="digit"
+          value="{{amountDraft}}"
+          placeholder="0.00"
+          placeholder-class="amount-placeholder"
+          bindinput="onAmountInput"
+        />
+      </view>
+      <text class="amount-field-sub">当前金额 ¥{{amountOriginalText}}</text>
+    </view>
+
+    <view
+      class="amount-save-btn {{amountSaving ? 'amount-save-btn--loading' : ''}}"
+      bindtap="onConfirmAdjustAmount"
+    >
+      <text class="amount-save-text">{{amountSaving ? '保存中…' : '保存金额'}}</text>
+    </view>
+  </view>
+</view>

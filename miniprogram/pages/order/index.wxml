@@ -1,0 +1,273 @@
+<!-- ── Page wrapper ────────────────────────────────────────────── -->
+<view class="page-wrapper">
+
+  <!-- ── Dual scroll area ────────────────────────────────────────── -->
+  <view class="order-page">
+
+    <!-- Left: Category panel -->
+    <scroll-view class="category-panel" scroll-y>
+      <view
+        wx:for="{{categories}}"
+        wx:for-item="cat"
+        wx:key="_id"
+        class="cat-item {{cat._id === activeCategory ? 'cat-item--active' : ''}}"
+        data-id="{{cat._id}}"
+        bindtap="onCategoryTap"
+      >
+        <view class="cat-indicator"></view>
+        <text class="cat-name">{{cat.name}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- Right: Product panel -->
+    <scroll-view
+      class="product-panel"
+      scroll-y
+      scroll-into-view="{{scrollToSection}}"
+      scroll-with-animation
+      bindscroll="onProductScroll"
+    >
+      <view
+        wx:for="{{productSections}}"
+        wx:for-item="section"
+        wx:for-index="sIdx"
+        wx:key="_id"
+        class="product-section"
+        id="section-{{section._id}}"
+      >
+        <view class="section-header">
+          <text class="section-title">{{section.name}}</text>
+        </view>
+
+        <!-- Entire card is the tap target → opens flavor sheet -->
+        <view
+          wx:for="{{section.products}}"
+          wx:for-item="product"
+          wx:for-index="pIdx"
+          wx:key="_id"
+          class="product-card"
+          bindtap="onAddProduct"
+          data-id="{{product._id}}"
+          hover-class="product-card--pressed"
+          hover-stay-time="80"
+        >
+          <image class="product-image" src="{{product.image}}" mode="aspectFill"/>
+          <view class="product-info">
+            <text class="product-title">{{product.title}}</text>
+            <text class="product-desc">{{product.description}}</text>
+            <view class="product-footer">
+              <view class="product-price-wrap">
+                <text class="product-price">¥{{product.priceText}}</text>
+                <text wx:if="{{product.priceSuffix}}" class="product-price-suffix">{{product.priceSuffix}}</text>
+              </view>
+              <!-- Has flavors/SKUs → pill signals a selection is required -->
+              <view wx:if="{{product.skus && product.skus.length > 1}}" class="spec-btn" catchtap="onAddProduct" data-id="{{product._id}}">
+                <text class="spec-btn-text">{{product.specButtonText}}</text>
+              </view>
+              <view wx:elif="{{product.cartQty > 0}}" class="list-qty-stepper" catchtap="preventClose">
+                <view
+                  class="list-qty-btn"
+                  catchtap="onListProductDecrease"
+                  data-id="{{product._id}}"
+                  hover-class="list-qty-btn--pressed"
+                  hover-stay-time="80"
+                >
+                  <text class="list-qty-btn-text">−</text>
+                </view>
+                <text class="list-qty-value">{{product.cartQty}}</text>
+                <view
+                  class="list-qty-btn list-qty-btn--primary"
+                  catchtap="onQuickAddProduct"
+                  data-id="{{product._id}}"
+                  hover-class="list-qty-btn--primary-pressed"
+                  hover-stay-time="80"
+                >
+                  <text class="list-qty-btn-text list-qty-btn-text--primary">+</text>
+                </view>
+              </view>
+              <!-- No flavors → circle signals instant add -->
+              <view wx:else class="add-btn" catchtap="onQuickAddProduct" data-id="{{product._id}}" hover-class="add-btn--pressed" hover-stay-time="80">
+                <text class="add-icon">+</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="list-bottom-pad"></view>
+    </scroll-view>
+
+  </view>
+
+  <!-- ── Floating cart bar ───────────────────────────────────────── -->
+  <view class="cart-bar">
+    <!-- Left zone: tappable → opens cart detail sheet -->
+    <view class="cart-bar-left {{cartTotalQty > 0 ? '' : 'cart-bar-left--empty'}}" bindtap="onOpenCartDetail">
+      <view class="cart-icon-wrap">
+        <image
+          class="cart-icon-img"
+          src="/images/icons/tabbar/order-active.png"
+          mode="aspectFit"
+        />
+        <view class="cart-count-badge" wx:if="{{cartTotalQty > 0}}">
+          <text class="cart-count-text">{{cartTotalQty}}</text>
+        </view>
+      </view>
+      <text wx:if="{{cartTotalQty > 0}}" class="cart-total-price">¥{{cartTotalPriceFormatted}}</text>
+      <text wx:else class="cart-empty-text">未选择商品</text>
+    </view>
+    <!-- Right: checkout -->
+    <view class="cart-checkout-btn {{cartTotalQty > 0 ? '' : 'cart-checkout-btn--disabled'}}" bindtap="onGoCheckout">
+      <text class="cart-checkout-text">去结算</text>
+    </view>
+  </view>
+
+</view>
+
+<button
+  class="customer-service-fab customer-service-fab--high"
+  open-type="contact"
+  session-from="{{customerServiceSession}}"
+  send-message-title="{{customerServiceTitle}}"
+  send-message-path="/pages/index/index"
+  show-message-card="true"
+  hover-class="customer-service-fab--pressed"
+>
+  <image class="customer-service-fab__icon" src="/images/icons/customer-service.svg" mode="aspectFit" />
+  <text class="customer-service-fab__label">联系客服</text>
+</button>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- Flavor Selection Bottom Sheet  (z-index: 100)                 -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<view
+  class="modal-mask product-detail-mask {{showModal ? 'modal-mask--visible' : ''}}"
+  catchtouchmove="onPreventScroll"
+  bindtap="onCloseModal"
+>
+  <view
+    class="bottom-sheet product-detail-sheet {{showModal ? 'bottom-sheet--open' : ''}}"
+    catchtap="preventClose"
+  >
+    <view class="sheet-handle"></view>
+
+    <scroll-view class="product-sheet-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+      <!-- Product info -->
+      <view class="sheet-header">
+        <image class="sheet-product-image" src="{{activeProduct.image}}" mode="aspectFill"/>
+        <view class="sheet-product-meta">
+          <text class="sheet-product-name">{{activeProduct.title}}</text>
+          <text class="sheet-product-price">¥{{selectedSkuPrice}}</text>
+          <text class="sheet-product-subdesc">{{activeProduct.description}}</text>
+        </view>
+        <view class="sheet-close-btn" bindtap="onCloseModal">
+          <text class="sheet-close-icon">×</text>
+        </view>
+      </view>
+
+      <!-- Flavor chips -->
+      <block wx:if="{{activeProduct.skus && activeProduct.skus.length > 1}}">
+        <view class="sheet-section">
+          <text class="sheet-section-label">口味</text>
+          <view class="flavor-grid">
+            <view
+              wx:for="{{activeProduct.skus}}"
+              wx:for-item="sku"
+              wx:key="id"
+              class="flavor-tag {{sku.id === selectedSkuId ? 'flavor-tag--active' : ''}}"
+              data-skuid="{{sku.id}}"
+              bindtap="onSelectSku"
+            >
+              <text class="flavor-tag-text">{{sku.name}}</text>
+            </view>
+          </view>
+        </view>
+      </block>
+
+      <!-- Quantity -->
+      <view class="sheet-section">
+        <text class="sheet-section-label">数量</text>
+        <view class="qty-row">
+          <view
+            class="qty-btn {{modalQty <= 1 ? 'qty-btn--disabled' : ''}}"
+            bindtap="onDecreaseQty"
+          >
+            <text class="qty-btn-text">−</text>
+          </view>
+          <text class="qty-value">{{modalQty}}</text>
+          <view class="qty-btn" bindtap="onIncreaseQty">
+            <text class="qty-btn-text">+</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="sheet-footer">
+      <button class="confirm-btn" bindtap="onConfirmAdd">加入购物车</button>
+    </view>
+  </view>
+</view>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!-- Cart Detail Bottom Sheet  (z-index: 200)                      -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<view
+  class="modal-mask cart-detail-mask {{showCartDetail ? 'modal-mask--visible' : ''}}"
+  catchtouchmove="onPreventScroll"
+  bindtap="onCloseCartDetail"
+>
+  <view
+    class="bottom-sheet cart-detail-sheet {{showCartDetail ? 'bottom-sheet--open' : ''}}"
+    catchtap="preventClose"
+  >
+    <view class="sheet-handle"></view>
+
+    <!-- Cart detail header -->
+    <view class="cart-detail-header">
+      <text class="cart-detail-title">购物车</text>
+      <view class="cart-clear-btn" bindtap="onClearCart">
+        <text class="cart-clear-text">清空</text>
+      </view>
+    </view>
+
+    <!-- Scrollable cart item list -->
+    <scroll-view class="cart-items-scroll" scroll-y>
+      <view
+        wx:for="{{cart}}"
+        wx:for-item="item"
+        wx:key="key"
+        class="cart-item"
+      >
+        <image class="cart-item-image" src="{{item.image}}" mode="aspectFill"/>
+        <view class="cart-item-info">
+          <text class="cart-item-title">{{item.title}}</text>
+          <text class="cart-item-flavor" wx:if="{{item.flavor}}">{{item.flavor}}</text>
+          <view class="cart-item-row">
+            <text class="cart-item-price">¥{{item.price}}</text>
+            <view class="cart-item-qty">
+              <view class="qty-btn-sm" bindtap="onCartItemDecrease" data-key="{{item.key}}">
+                <text class="qty-btn-sm-text">−</text>
+              </view>
+              <text class="qty-value-sm">{{item.quantity}}</text>
+              <view class="qty-btn-sm" bindtap="onCartItemIncrease" data-key="{{item.key}}">
+                <text class="qty-btn-sm-text">+</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- Sticky footer: subtotal + checkout -->
+    <view class="cart-detail-footer">
+      <view class="cart-subtotal">
+        <text class="cart-subtotal-label">小计</text>
+        <text class="cart-subtotal-price">¥{{cartTotalPriceFormatted}}</text>
+      </view>
+      <view class="cart-detail-checkout-btn" bindtap="onGoCheckout">
+        <text class="cart-detail-checkout-text">去结算</text>
+      </view>
+    </view>
+
+  </view>
+</view>

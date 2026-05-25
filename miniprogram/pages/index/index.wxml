@@ -1,0 +1,27 @@
+<view class="container">
+  <image
+    class="landing-image"
+    wx:if="{{homeHeroImage}}"
+    src="{{homeHeroImage}}"
+    mode="widthFix"
+    lazy-load
+  />
+  <view class="cta-dock">
+    <button class="cta-btn" hover-class="cta-btn--active" bindtap="onStartShopping">
+      <text class="cta-btn-text">开始选购</text>
+      <text class="cta-btn-arrow">›</text>
+    </button>
+  </view>
+  <button
+    class="customer-service-fab"
+    open-type="contact"
+    session-from="{{customerServiceSession}}"
+    send-message-title="{{customerServiceTitle}}"
+    send-message-path="/pages/index/index"
+    show-message-card="true"
+    hover-class="customer-service-fab--pressed"
+  >
+    <image class="customer-service-fab__icon" src="/images/icons/customer-service.svg" mode="aspectFit" />
+    <text class="customer-service-fab__label">联系客服</text>
+  </button>
+</view>

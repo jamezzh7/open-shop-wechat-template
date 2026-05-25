@@ -1,0 +1,159 @@
+<view class="checkout-wrapper">
+
+  <!-- ── Fulfillment mode ───────────────────────────────────────── -->
+  <view class="section-card">
+    <text class="section-label">取餐方式</text>
+    <view class="fulfillment-tabs">
+      <view
+        class="fulfillment-tab {{fulfillmentMode === 'pickup' ? 'fulfillment-tab--active' : ''}}"
+        data-mode="pickup"
+        bindtap="onSelectFulfillment"
+      >
+        <text class="fulfillment-tab-text">自提</text>
+      </view>
+      <view
+        class="fulfillment-tab {{fulfillmentMode === 'delivery' ? 'fulfillment-tab--active' : ''}}"
+        data-mode="delivery"
+        bindtap="onSelectFulfillment"
+      >
+        <text class="fulfillment-tab-text">配送</text>
+      </view>
+    </view>
+
+    <!-- Pickup: store info -->
+    <view class="store-info" wx:if="{{fulfillmentMode === 'pickup'}}">
+      <text class="store-name">{{pickupConfig.storeName}}</text>
+      <text class="store-address" wx:if="{{pickupConfig.pickupAddress}}">{{pickupConfig.pickupAddress}}</text>
+      <text class="store-meta" wx:if="{{pickupConfig.pickupNote}}">{{pickupConfig.pickupNote}}</text>
+    </view>
+
+    <!-- Delivery: address selector -->
+    <view class="address-selector" wx:else bindtap="onChooseAddress">
+      <text class="address-pin">📍</text>
+      <!-- Address filled -->
+      <view class="address-body" wx:if="{{addressInfo}}">
+        <view class="address-name-row">
+          <text class="address-name">{{addressInfo.userName}}</text>
+          <text class="address-phone">{{addressInfo.telNumber}}</text>
+        </view>
+        <text class="address-detail">{{addressInfo.provinceName}}{{addressInfo.cityName}}{{addressInfo.countyName}}{{addressInfo.detailInfo}}</text>
+      </view>
+      <!-- No address yet -->
+      <view class="address-empty" wx:else>
+        <text class="address-empty-text">选择配送地址</text>
+      </view>
+      <text class="address-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- ── Order items ────────────────────────────────────────────── -->
+  <view class="section-card">
+    <text class="section-label">已选商品 ({{totalQty}} 件)</text>
+    <view
+      wx:for="{{items}}"
+      wx:for-item="item"
+      wx:key="key"
+      class="checkout-item"
+    >
+      <image class="checkout-item-image" src="{{item.image}}" mode="aspectFill"/>
+      <view class="checkout-item-info">
+        <text class="checkout-item-title">{{item.title}}</text>
+        <text class="checkout-item-flavor" wx:if="{{item.flavor}}">{{item.flavor}}</text>
+        <view class="checkout-item-meta">
+          <text class="checkout-item-unit-price">¥{{item.price}} × {{item.quantity}}</text>
+        </view>
+      </view>
+      <text class="checkout-item-subtotal">¥{{item.subtotal}}</text>
+    </view>
+  </view>
+
+  <!-- ── Price breakdown ───────────────────────────────────────── -->
+  <view class="section-card">
+    <view class="price-row">
+      <text class="price-label">商品小计</text>
+      <text class="price-value">¥{{subtotalFormatted}}</text>
+    </view>
+    <view class="price-row">
+      <text class="price-label">运费</text>
+      <!-- Pickup: always free -->
+      <text class="price-value--muted" wx:if="{{fulfillmentMode === 'pickup'}}">自提免费</text>
+      <text class="price-value--muted" wx:elif="{{shippingPending}}">选择地址后计算</text>
+      <!-- Delivery, fee applies -->
+      <text class="price-value" wx:elif="{{!shippingIsFree}}">¥{{shippingFeeFormatted}}</text>
+      <!-- Delivery, free-shipping threshold hit -->
+      <view class="shipping-free-wrap" wx:else>
+        <text class="price-value--free">¥0.00</text>
+        <text class="shipping-free-badge">{{freeShippingLabel}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- ── Payment method ───────────────────────────────────────── -->
+  <view class="section-card">
+    <text class="section-label">支付方式</text>
+    <view
+      class="payment-option {{paymentMethod === 'wechat' ? 'payment-option--active' : ''}}"
+      data-method="wechat"
+      bindtap="onSelectPaymentMethod"
+    >
+      <view class="payment-copy">
+        <text class="payment-title">微信支付</text>
+        <text class="payment-subtitle">使用微信支付完成订单</text>
+      </view>
+      <text class="payment-check">{{paymentMethod === 'wechat' ? '✓' : ''}}</text>
+    </view>
+    <view
+      class="payment-option {{paymentMethod === 'wallet' ? 'payment-option--active' : ''}} {{walletUsable ? '' : 'payment-option--disabled'}}"
+      data-method="wallet"
+      bindtap="onSelectPaymentMethod"
+    >
+      <view class="payment-copy">
+        <text class="payment-title">会员余额</text>
+        <text class="payment-subtitle">{{walletPaymentHint}}</text>
+      </view>
+      <text class="payment-check">{{paymentMethod === 'wallet' ? '✓' : ''}}</text>
+    </view>
+  </view>
+
+  <!-- ── Remark ─────────────────────────────────────────────────── -->
+  <view class="section-card">
+    <text class="section-label">备注</text>
+    <input
+      class="remark-input"
+      placeholder="口味偏好、特殊要求等"
+      placeholder-class="remark-placeholder"
+      maxlength="80"
+      bindinput="onRemarkInput"
+    />
+  </view>
+
+  <view class="page-bottom-pad"></view>
+
+</view>
+
+<!-- ── Sticky bottom bar ──────────────────────────────────────── -->
+<view class="bottom-bar">
+  <view class="bottom-total-block">
+    <text class="bottom-label">合计</text>
+    <text class="bottom-total">¥{{grandTotalFormatted}}</text>
+  </view>
+  <view
+    class="submit-btn {{submitting ? 'submit-btn--disabled' : ''}}"
+    bindtap="onSubmitOrder"
+  >
+    <text class="submit-btn-text">提交订单</text>
+  </view>
+</view>
+
+<button
+  class="customer-service-fab customer-service-fab--high"
+  open-type="contact"
+  session-from="{{customerServiceSession}}"
+  send-message-title="{{customerServiceTitle}}"
+  send-message-path="/pages/index/index"
+  show-message-card="true"
+  hover-class="customer-service-fab--pressed"
+>
+  <image class="customer-service-fab__icon" src="/images/icons/customer-service.svg" mode="aspectFit" />
+  <text class="customer-service-fab__label">联系客服</text>
+</button>

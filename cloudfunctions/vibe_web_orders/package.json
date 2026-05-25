@@ -1,0 +1,9 @@
+{
+  "name": "vibe_web_orders",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "@cloudbase/node-sdk": "latest",
+    "wx-server-sdk": "~2.6.3"
+  }
+}

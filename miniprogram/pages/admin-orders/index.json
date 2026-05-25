@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "订单管理",
+  "navigationBarBackgroundColor": "#FFFFFF",
+  "navigationBarTextStyle": "black",
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#F5F5F7"
+}

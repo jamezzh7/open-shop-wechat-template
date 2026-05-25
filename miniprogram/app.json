@@ -1,0 +1,57 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/order/index",
+    "pages/orders/index",
+    "pages/profile/index",
+    "pages/checkout/index",
+    "pages/order-list/index",
+    "pages/admin-orders/index"
+  ],
+  "tabBar": {
+    "color": "#B0B0B0",
+    "selectedColor": "#8F6BE9",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/icons/tabbar/home.png",
+        "selectedIconPath": "images/icons/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/order/index",
+        "text": "点单",
+        "iconPath": "images/icons/tabbar/order.png",
+        "selectedIconPath": "images/icons/tabbar/order-active.png"
+      },
+      {
+        "pagePath": "pages/orders/index",
+        "text": "订单",
+        "iconPath": "images/icons/tabbar/orders.png",
+        "selectedIconPath": "images/icons/tabbar/orders-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/icons/tabbar/profile.png",
+        "selectedIconPath": "images/icons/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "window": {
+    "backgroundColor": "#FFFFFF",
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "navigationBarTitleText": "Open Shop",
+    "navigationBarTextStyle": "black"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "navigateToMiniProgramAppIdList": [
+    "wx6885acbedba59c14"
+  ],
+  "requiredPrivateInfos": ["chooseAddress"]
+}

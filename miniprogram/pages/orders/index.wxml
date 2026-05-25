@@ -1,0 +1,155 @@
+<!-- ── Sticky tab bar ──────────────────────────────────────────── -->
+<scroll-view class="tab-bar" scroll-x>
+  <view class="tab-list">
+    <view
+      wx:for="{{tabs}}"
+      wx:for-item="tab"
+      wx:for-index="idx"
+      wx:key="label"
+      class="tab-item {{activeTab === idx ? 'tab-item--active' : ''}}"
+      data-tab="{{idx}}"
+      bindtap="onTabTap"
+    >
+      <text class="tab-item-label">{{tab.label}}</text>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- ── Scrollable order list ───────────────────────────────────── -->
+<scroll-view class="order-scroll" scroll-y>
+
+  <!-- Loading -->
+  <view class="loading-wrap" wx:if="{{loading}}">
+    <text class="loading-text">加载中…</text>
+  </view>
+
+  <!-- Empty state -->
+  <view class="empty-wrap" wx:elif="{{orders.length === 0}}">
+    <text class="empty-circle">○</text>
+    <text class="empty-title">暂无相关订单</text>
+    <text class="empty-sub">快去挑选你喜欢的商品吧～</text>
+  </view>
+
+  <!-- Order cards -->
+  <block wx:else>
+    <view
+      class="order-card"
+      wx:for="{{orders}}"
+      wx:for-item="order"
+      wx:key="_id"
+    >
+      <!-- Card top: date + status badge -->
+      <view class="card-top">
+        <text class="card-date">{{order.createdAtFormatted}}</text>
+        <view class="status-badge {{order.statusBadgeClass}}">
+          <text class="status-badge-text">{{order.statusText}}</text>
+        </view>
+      </view>
+
+      <view class="card-divider"></view>
+
+      <!-- Item rows -->
+      <view class="card-items">
+        <view
+          class="card-item-row"
+          wx:for="{{order.items}}"
+          wx:for-item="product"
+          wx:key="productId"
+        >
+          <view class="card-item-left">
+            <text class="card-item-name">{{product.title}}</text>
+            <text class="card-item-flavor" wx:if="{{product.flavor}}"> · {{product.flavor}}</text>
+          </view>
+          <view class="card-item-right">
+            <text class="card-item-qty">×{{product.quantity}}</text>
+            <text class="card-item-price">¥{{product.itemSubtotalFormatted}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="card-divider"></view>
+
+      <!-- Card footer: fulfillment + price breakdown -->
+      <view class="card-footer">
+        <view class="footer-main">
+          <view class="fulfillment-chip">
+            <text class="fulfillment-chip-text">{{order.fulfillmentText}}</text>
+          </view>
+          <view class="footer-total">
+            <text class="footer-total-label">合计</text>
+            <text class="footer-total-amount">¥{{order.totalAmountFormatted}}</text>
+          </view>
+        </view>
+        <text class="footer-breakdown">小计 ¥{{order.subtotalFormatted}} · 运费 ¥{{order.shippingFeeFormatted}}</text>
+
+        <view class="tracking-card" wx:if="{{order.isDelivery && order.hasTracking}}">
+          <view class="tracking-card-main">
+            <text class="tracking-card-label">{{order.trackingCarrierText}}</text>
+            <text class="tracking-card-number">{{order.trackingNumberText}}</text>
+            <text class="tracking-card-time" wx:if="{{order.shippedAtFormatted}}">发货时间 {{order.shippedAtFormatted}}</text>
+            <text class="tracking-card-time">预计送达以快递更新为准</text>
+          </view>
+          <view
+            class="tracking-detail-btn"
+            data-orderid="{{order._id}}"
+            bindtap="onOpenTrackingDetail"
+          >
+            <text class="tracking-detail-text">查询</text>
+          </view>
+          <view
+            class="tracking-copy-btn"
+            data-trackingnumber="{{order.trackingNumberText}}"
+            bindtap="onCopyTrackingNumber"
+          >
+            <text class="tracking-copy-text">复制</text>
+          </view>
+        </view>
+
+        <!-- Action buttons — only shown for actionable statuses -->
+        <view class="card-actions" wx:if="{{order.canPay || order.canRefund || order.canConfirmReceipt}}">
+          <view
+            wx:if="{{order.canPay}}"
+            class="action-btn action-btn--primary {{processingPaymentId === order._id ? 'action-btn--loading' : ''}}"
+            data-orderid="{{order._id}}"
+            data-totalfen="{{order.totalAmountFen}}"
+            bindtap="onPayOrder"
+          >
+            <text class="action-btn-text">{{processingPaymentId === order._id ? '支付中…' : '去付款'}}</text>
+          </view>
+          <view
+            wx:if="{{order.canRefund}}"
+            class="action-btn action-btn--ghost"
+            data-orderid="{{order._id}}"
+            bindtap="onApplyRefund"
+          >
+            <text class="action-btn-text">申请退款</text>
+          </view>
+          <view
+            wx:if="{{order.canConfirmReceipt}}"
+            class="action-btn action-btn--primary"
+            data-orderid="{{order._id}}"
+            bindtap="onConfirmReceipt"
+          >
+            <text class="action-btn-text">确认收货</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="list-bottom-pad"></view>
+  </block>
+
+</scroll-view>
+
+<button
+  class="customer-service-fab"
+  open-type="contact"
+  session-from="{{customerServiceSession}}"
+  send-message-title="{{customerServiceTitle}}"
+  send-message-path="/pages/index/index"
+  show-message-card="true"
+  hover-class="customer-service-fab--pressed"
+>
+  <image class="customer-service-fab__icon" src="/images/icons/customer-service.svg" mode="aspectFit" />
+  <text class="customer-service-fab__label">联系客服</text>
+</button>

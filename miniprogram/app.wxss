@@ -1,0 +1,133 @@
+/* ─── Design Tokens ─────────────────────────────────────────── */
+page {
+  /* Color */
+  --color-primary:        #8F6BE9;
+  --color-primary-light:  #B49DF0;
+  --color-primary-dark:   #6B4EC7;
+  --color-primary-tint:   #F3EFFD;   /* 8% primary on white */
+
+  --color-bg:             #FFFFFF;
+  --color-bg-subtle:      #F8F7FC;   /* near-white with purple undertone */
+  --color-surface:        #FFFFFF;
+
+  --color-text-primary:   #1A1A2E;
+  --color-text-secondary: #6B6B7B;
+  --color-text-muted:     #ABABBB;
+  --color-border:         #EBEBF0;
+  --color-divider:        #F2F2F5;
+
+  /* Spacing (8rpx base grid) */
+  --space-1:  8rpx;
+  --space-2:  16rpx;
+  --space-3:  24rpx;
+  --space-4:  32rpx;
+  --space-5:  40rpx;
+  --space-6:  48rpx;
+  --space-8:  64rpx;
+  --space-10: 80rpx;
+  --space-12: 96rpx;
+
+  /* Border radius */
+  --radius-sm:   8rpx;
+  --radius-md:   16rpx;
+  --radius-lg:   24rpx;
+  --radius-xl:   32rpx;
+  --radius-pill: 999rpx;
+
+  /* Typography */
+  --text-xs:   20rpx;
+  --text-sm:   24rpx;
+  --text-base: 28rpx;
+  --text-md:   32rpx;
+  --text-lg:   36rpx;
+  --text-xl:   44rpx;
+  --text-2xl:  56rpx;
+  --text-3xl:  72rpx;
+
+  --leading-tight:   1.3;
+  --leading-normal:  1.6;
+  --leading-relaxed: 1.8;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0em;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.08em;
+
+  /* Elevation (purple-tinted shadows) */
+  --shadow-sm: 0 2rpx 12rpx  rgba(143, 107, 233, 0.06);
+  --shadow-md: 0 4rpx 24rpx  rgba(143, 107, 233, 0.10);
+  --shadow-lg: 0 8rpx 40rpx  rgba(143, 107, 233, 0.14);
+  --shadow-xl: 0 16rpx 64rpx rgba(143, 107, 233, 0.18);
+
+  /* ─── Base styles ─────────────────────────────────────────── */
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', sans-serif;
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+page, view, text, image, button, input, textarea, scroll-view, swiper, swiper-item {
+  box-sizing: border-box;
+}
+
+/* ─── Floating customer service entry ─────────────────────────── */
+button.customer-service-fab {
+  position: fixed;
+  left: 24rpx;
+  bottom: 40rpx;
+  width: 124rpx;
+  height: 124rpx;
+  min-width: 124rpx;
+  max-width: 124rpx;
+  min-height: 124rpx;
+  max-height: 124rpx;
+  margin: 0;
+  padding: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.96);
+  border: 2rpx solid rgba(143, 107, 233, 0.20);
+  border-radius: 50%;
+  box-shadow: 0 10rpx 26rpx rgba(31, 27, 36, 0.12);
+  line-height: 1.15;
+  font-size: 22rpx;
+  overflow: hidden;
+}
+
+button.customer-service-fab--raised {
+  bottom: 152rpx;
+}
+
+button.customer-service-fab--high {
+  bottom: 184rpx;
+}
+
+button.customer-service-fab--pressed {
+  background-color: #FFFFFF;
+  box-shadow: 0 6rpx 18rpx rgba(31, 27, 36, 0.10);
+}
+
+button.customer-service-fab::after {
+  border: none;
+}
+
+.customer-service-fab__icon {
+  width: 42rpx;
+  height: 42rpx;
+  margin-bottom: 6rpx;
+  flex-shrink: 0;
+}
+
+.customer-service-fab__label {
+  display: block;
+  color: var(--color-primary);
+  font-size: 22rpx;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: nowrap;
+}

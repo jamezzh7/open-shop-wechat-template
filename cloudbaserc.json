@@ -1,0 +1,90 @@
+{
+  "envId": "your-cloudbase-env-id",
+  "functionRoot": "cloudfunctions",
+  "functions": [
+    {
+      "name": "vibe_createOrder",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_pay_callback",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_check_admin",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 15,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_wallet",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_manage_order",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_shipping_quote",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 10,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_catalog",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 15,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_web_catalog",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 15,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_query_orders",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 15,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_web_orders",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 20,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_web_shipping",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 15,
+      "installDependency": true
+    },
+    {
+      "name": "vibe_cron_auto_receive",
+      "runtime": "Nodejs18.15",
+      "handler": "index.main",
+      "timeout": 60,
+      "installDependency": true
+    }
+  ]
+}
