@@ -75,6 +75,10 @@ npm run deploy:functions -- --only vibe_catalog,vibe_createOrder
 
 如果不配置，云函数会使用模板默认值，但正式店铺建议按客户环境补齐。
 
+## 商家管理后台
+
+模板自带 React/Vite 商家管理后台，代码位于 `admin-web/`。后台的本地配置、构建命令、环境变量和部署说明见 [商家管理后台文档](admin-web/README.md)。
+
 ## 后台管理员
 
 后台登录使用 CloudBase Web 用户，商家小程序管理入口使用微信小程序 OPENID。创建首个管理员时，先在 CloudBase 控制台创建后台登录用户，并获取该用户 UID；如果还需要小程序端商家管理入口，再获取管理员微信 OPENID。
