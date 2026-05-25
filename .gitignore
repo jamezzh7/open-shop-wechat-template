@@ -2,16 +2,6 @@
 .DS_Store
 **/.DS_Store
 
-# Local AI/agent tooling and project memories
-AGENTS.md
-CLAUDE.md
-.ai/
-.agents/
-.claude/
-.codex/
-.mcp.json
-skills-lock.json
-
 # WeChat DevTools private/device-specific config
 project.private.config.json
 
